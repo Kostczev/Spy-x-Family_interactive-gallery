@@ -1,0 +1,77 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    position: relative;
+
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    /* font-optical-sizing: auto; */
+    font-size: 1.3rem;
+    line-height: 1.2;
+    color: #1d1d1d;
+
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
+    overflow-x: hidden;
+
+    background: 
+        linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.03"><path d="M0 0h100v100H0z" fill="none"/><path d="M20 20h60v60H20z" stroke="black" stroke-width="2"/></svg>');
+}
+
+.wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    width: min(60vw, 800px);
+    height: min(60vw, 800px);
+    background-image: url('../media/img/SpyXFamilyLogo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.08;
+    /* Еще более прозрачное */
+    z-index: 1;
+    /* Между фоном и контентом */
+    pointer-events: none;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
+    height: 40px;
+    background: #e7e7e7;
+}
+
+@media (max-width: 1024px) {
+    .wrapper::before {
+        width: min(40vw, 800px);
+        height: min(40vw, 800px);
+    }
+}
+
+@media (max-width: 700px) {
+    /* .wrapper::before {
+        top: 20vh;
+    } */
+}

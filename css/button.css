@@ -1,0 +1,20 @@
+.button {
+    background: #FFF;
+    padding: 12px;
+    border-radius: 8px;
+    color: #1d1d1d;
+    border: none;
+    display: inline-block;
+}
+
+.button:hover {
+    background: #fff6ff;
+}
+
+.button:focus {
+    background: #feebff;
+}
+
+.button:disabled {
+    background: #bebabe;
+}

@@ -1,0 +1,229 @@
+.hero {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    min-height: min(85vh, 1000px);
+}
+
+.hero__about,
+.hero__secrets {
+    width: 25%;
+    margin-top: 30vh;
+}
+
+.hero-avatar__box {
+    position: absolute;
+    pointer-events: none;
+    margin-top: 5%;
+    width: 100%;
+    height: 90%;
+}
+
+.hero-avatar__box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140%;
+    height: 100%;
+    background: radial-gradient(ellipse at center,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0.1) 40%,
+            transparent 70%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.hero-avatar {
+    position: absolute;
+    height: 100%;
+    transform: translateX(-50%) translateY(20%) scale(.2);
+    left: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    ;
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.25));
+    z-index: 3;
+}
+
+.three-item-switcher .current,
+.three-item-switcher .prev,
+.three-item-switcher .next {
+    opacity: 1;
+    z-index: 2;
+}
+
+.three-item-switcher .current {
+    z-index: 4;
+    transform: translateX(-50%) scale(1);
+    filter:
+        drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3)) brightness(1.05) contrast(1.1);
+}
+
+
+.three-item-switcher .prev {
+    --avatar-x: -70%;
+}
+
+.three-item-switcher .next {
+    --avatar-x: -30%;
+}
+
+.three-item-switcher .prev,
+.three-item-switcher .next {
+    transform: translateX(var(--avatar-x)) translateY(15%) scale(0.4);
+    filter:
+        drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2)) brightness(0.85) contrast(0.9) blur(0.5px);
+}
+
+.switcher-control[data-action="prev"]:focus~.three-item-switcher .prev,
+.switcher-control[data-action="prev"]:hover~.three-item-switcher .prev,
+.switcher-control[data-action="next"]:focus~.three-item-switcher .next,
+.switcher-control[data-action="next"]:hover~.three-item-switcher .next {
+    transform: translateX(var(--avatar-x)) translateY(15%) scale(0.45);
+    filter: drop-shadow(0 0 8px rgba(77, 144, 254, 0.6));
+}
+
+.hero__button {
+    position: absolute;
+    height: 35%;
+    width: 20%;
+    bottom: 17%;
+    z-index: 20;
+}
+
+.hero__button[data-action="prev"] {
+    left: 25%;
+}
+
+.hero__button[data-action="next"] {
+    right: 25%;
+}
+
+.hero__name {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    margin-bottom: 16px;
+    font-size: 36px;
+}
+
+.hero__description,
+.hero__secrets-text {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.hero__secrets-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.hero__secrets-imgs {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #998181;
+}
+
+.hero__secrets-img {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    object-fit: cover;
+}
+
+.hero__about-item {
+    padding: 20px 0 40px;
+    margin: .01px;
+}
+
+
+.hero__secrets-imgs {
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.hero-avatar__box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+
+
+@media (max-width: 1024px) {
+    .hero__about,
+    .hero__secrets {
+        margin-top: 16vh;
+        width: 35%;
+    }
+
+
+    .hero-avatar__box {
+        height: 83vh;
+        margin-top: 15vh;
+    }
+
+    .hero__button {
+        height: 30%;
+        width: 30%;
+        bottom: 15%;
+        z-index: 20;
+    }
+
+    .hero__button[data-action="prev"] {
+        left: 15%;
+    }
+
+    .hero__button[data-action="next"] {
+        right: 15%;
+    }
+}
+
+@media (max-width: 700px) {
+    .hero {
+        flex-direction: column;
+        justify-content: start;
+        gap: 0p;
+    }
+
+    .hero__about {
+        margin-top: 5vh;
+        margin-bottom: 40vh;
+    }
+
+    .hero__secrets {
+        margin-top: 0;
+    }
+
+    .hero__about,
+    .hero__secrets {
+        width: 100%;
+    }
+
+    .hero__about-item {
+        padding: 20px 0 20px;
+        margin: .01px;
+    }
+
+    .hero-avatar__box {
+        height: 50vh;
+        min-height: 300px;
+        margin-top: 17vh;
+    }
+
+    .hero__name {
+        font-size: 28px;
+    }
+
+    .hero__button {
+        height: 30%;
+        width: 30%;
+        bottom: 0;
+        top: 30vh;
+        z-index: 20;
+    }
+}

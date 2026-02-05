@@ -1,0 +1,39 @@
+/* ghost-switcher */
+.ghost-switcher__box {
+    position: relative;
+}
+
+.ghost-switcher__item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.7s ease;
+}
+
+.ghost-switcher__item.active {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* carousel */
+.carousel {
+    overflow: hidden;
+    
+    transition: all .6s ease;
+}
+
+.carousel__slider {
+    transition: all .6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.carousel__item {
+    user-select: none;
+}
+
+.carousel__item.active {
+    user-select: auto;
+}
