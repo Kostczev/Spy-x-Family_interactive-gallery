@@ -3,7 +3,7 @@ export class AutoplayManager {
         this.delay = options.delay || 10000;
         this.onTick = options.onTick;
 
-        this.timers = new Map();
+        this.groups = new Set();
         this.timeouts = new Map();
         this.init();
     }
@@ -24,6 +24,7 @@ export class AutoplayManager {
 
         document.querySelectorAll(`[data-group][data-autoplay]`).forEach(el => {
             const group = el.dataset.group;
+            this.groups.add(group);
             this.start(group);
             this.enablePauseOnHover(group);
         });
@@ -32,65 +33,43 @@ export class AutoplayManager {
     start(group) {
         this.stop(group);
 
-        const tick = () => {
-            if (!document.hidden) {
-                this.onTick(group);
-            }
+        const timeout = setTimeout(() => {
+            this.onTick(group);
+            this.start(group);
+        }, this.delay);
 
-            // Рекурсивно вызываем себя через setTimeout
-            // Если страница скрыта - таймаут будет "заморожен"
-            const timeoutId = setTimeout(tick, this.delay);
-            this.timeouts.set(group, timeoutId);
-        };
-
-        // Первый запуск
-        const timeoutId = setTimeout(tick, this.delay);
-        this.timeouts.set(group, timeoutId);
+        this.timeouts.set(group, timeout);
 
         console.log(`Autoplay started for group "${group}" (${this.delay}ms)`);
     }
 
-    // start(group) {
-    //     this.stop(group);
-
-    //     const timer = setInterval(() => {
-    //         this.onTick(group);
-    //     }, this.delay);
-
-    //     this.timers.set(group, timer);
-    //     console.log(`Autoplay started for group "${group}" (${this.delay}ms)`);
-    // }
-
     stop(group) {
-        const timer = this.timers.get(group);
+        const timer = this.timeouts.get(group);
         if (timer) {
-            clearInterval(timer);
-            this.timers.delete(group);
+            clearTimeout(timer);
+            this.timeouts.delete(group);
             console.log(`Autoplay stopped for group "${group}"`);
         }
     }
 
     pauseAll() {
-        this.timeouts.forEach((timeoutId, group) => {
-            clearTimeout(timeoutId);
-            this.timeouts.delete(group);
-        });
+        this.timeouts.forEach((_, group) => this.stop(group));
         console.log('All autoplay paused (page hidden)');
     }
 
     resumeAll() {
-        // Перезапускаем все остановленные таймеры
-        this.timeouts.forEach((_, group) => {
-            this.start(group);
-        });
+        this.groups.forEach((_, group) => this.start(group));
         console.log('All autoplay resumed (page visible)');
     }
 
     enableShouldSwap(group) {
         this.stop(group);
-        setTimeout(() => {
+
+        const timeout = setTimeout(() => {
             this.start(group);
         }, 10000);
+
+        this.timeouts.set(group, timeout);
     }
 
     enablePauseOnHover(group) {

@@ -34,7 +34,7 @@ export class InteractiveGallery {
             onTick: (groupName) => {
                 eventBus.emit(`${groupName}:next`);
             }
-        })
+        });
     }
 
     _initGroupedComponents(selector, ComponentClass, propertyName) {
@@ -114,6 +114,9 @@ export class InteractiveGallery {
         if (now - lastTime < cooldown) return false;
         this.groups.get(group).lastActionTime = now;
 
+        // if (this.autoplay) {
+        //     this.autoplay.reset(group, 10000);
+        // }
         if (this.autoplay) {
             this.autoplay.enableShouldSwap(group);
         }
