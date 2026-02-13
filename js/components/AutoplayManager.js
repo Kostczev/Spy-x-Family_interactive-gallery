@@ -5,29 +5,11 @@ export class AutoplayManager {
 
         this.groups = new Set();
         this.timeouts = new Map();
-        this.init();
     }
 
-    init() {
-        if (!this.onTick) {
-            console.warn(`AutoplayManager: onTick callback is required`);
-            return;
-        };
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this.pauseAll();
-            } else {
-                this.resumeAll();
-            }
-        });
-
-        document.querySelectorAll(`[data-group][data-autoplay]`).forEach(el => {
-            const group = el.dataset.group;
-            this.groups.add(group);
-            this.start(group);
-            this.enablePauseOnHover(group);
-        });
+    register(group) {
+        this.groups.add(group);
+        this.start(group);
     }
 
     start(group) {
@@ -62,12 +44,12 @@ export class AutoplayManager {
         console.log('All autoplay resumed (page visible)');
     }
 
-    enableShouldSwap(group) {
+    reset(group) {
         this.stop(group);
 
         const timeout = setTimeout(() => {
             this.start(group);
-        }, 10000);
+        }, 3000);
 
         this.timeouts.set(group, timeout);
     }

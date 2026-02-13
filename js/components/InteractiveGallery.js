@@ -10,7 +10,14 @@ export class InteractiveGallery {
         this.SWAP_COOLDOWN = 300;
 
         this.groups = new Map();
-        // groupName -> { switchers: [], carousels: [], threeItemSwitchers: [], lastActionTime }
+        // groupName -> {
+        //     switchers: [],
+        //     carousels: [],
+        //     threeItemSwitchers: [],
+        //     buttons: [],
+        //     lastActionTime,  время с последнего жмяка, нужно для ограничения срабатываний
+        //     autoplay: true 
+        // }
 
         this.init();
     }
@@ -18,7 +25,8 @@ export class InteractiveGallery {
     init() {
         this.setupComponents();
         this.bindEvents();
-        this.setupAutoplay();
+        this.initAutoplay();
+        this.bindVisibilityHandler();
         this.bindButtons();
     }
 
@@ -26,13 +34,50 @@ export class InteractiveGallery {
         this.initToggleSwitchers();
         this.initCarousels();
         this.initThreeItemSwitchers();
+        this.initButtons();
     }
 
-    setupAutoplay() {
+    initAutoplay() {
         this.autoplay = new AutoplayManager({
             delay: 10000,
             onTick: (groupName) => {
                 eventBus.emit(`${groupName}:next`);
+            }
+        });
+
+        this.groups.forEach((groupData, groupName) => {
+            if (!groupData.autoplay) return;
+            
+            this.autoplay.register(groupName);
+            this.bindAutoplayHoverForGroup(groupName, groupData);
+        });
+    }
+
+    bindAutoplayHoverForGroup(groupName, groupData) {
+        const elements = [
+            ...groupData.switchers.map(i => i.container),
+            ...groupData.carousels.map(i => i.carousel),
+            ...groupData.threeItemSwitchers.map(i => i.container),
+            ...groupData.buttons
+        ];
+
+        elements.forEach(element => {
+            element.addEventListener('pointerenter', () => {
+                this.autoplay.stop(groupName);
+            });
+
+            element.addEventListener('pointerleave', () => {
+                this.autoplay.start(groupName);
+            });
+        });
+    }
+
+    bindVisibilityHandler() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.autoplay.pauseAll();
+            } else {
+                this.autoplay.resumeAll();
             }
         });
     }
@@ -71,24 +116,38 @@ export class InteractiveGallery {
         );
     }
 
+    initButtons() {
+        document.querySelectorAll('[data-group][data-action]').forEach(el => {
+            const group = el.dataset.group;
+
+            this.verifyingExistenceGroup(group);
+
+            if (el.hasAttribute('data-autoplay')) {
+                this.groups.get(group).autoplay = true;
+            }
+
+            this.groups.get(group).buttons.push(el);
+        });
+    }
+
     verifyingExistenceGroup(group) {
         if (!this.groups.has(group)) {
-            this.groups.set(group, { switchers: [], carousels: [], threeItemSwitchers: [], lastActionTime: 0 });
+            this.groups.set(group, { switchers: [], carousels: [], threeItemSwitchers: [], buttons: [], lastActionTime: 0, autoplay: false });
         }
     }
 
     bindEvents() {
-        for (const [groupName, components] of this.groups) {
+        for (const [groupName, groupData] of this.groups) {
             eventBus.on(`${groupName}:next`, () => {
-                components.switchers.forEach(s => s.next());
-                components.threeItemSwitchers.forEach(t => t.next());
-                components.carousels.forEach(c => c.slide(1));
+                groupData.switchers.forEach(s => s.next());
+                groupData.threeItemSwitchers.forEach(t => t.next());
+                groupData.carousels.forEach(c => c.slide(1));
             });
 
             eventBus.on(`${groupName}:prev`, () => {
-                components.switchers.forEach(s => s.prev());
-                components.threeItemSwitchers.forEach(t => t.prev());
-                components.carousels.forEach(c => c.slide(-1));
+                groupData.switchers.forEach(s => s.prev());
+                groupData.threeItemSwitchers.forEach(t => t.prev());
+                groupData.carousels.forEach(c => c.slide(-1));
             });
         }
     }
@@ -114,11 +173,8 @@ export class InteractiveGallery {
         if (now - lastTime < cooldown) return false;
         this.groups.get(group).lastActionTime = now;
 
-        // if (this.autoplay) {
-        //     this.autoplay.reset(group, 10000);
-        // }
-        if (this.autoplay) {
-            this.autoplay.enableShouldSwap(group);
+        if (this.groups.get(group).autoplay) {
+            this.autoplay.reset(group);
         }
 
         return true;
